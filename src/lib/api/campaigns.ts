@@ -24,7 +24,7 @@ export const campaignApi = {
 
   // Create a new campaign
   create: async (
-    campaign: Omit<Campaign, "id" | "createdAt" | "updatedAt">
+    campaign: Omit<Campaign, "id" | "created_at" | "updated_at">
   ) => {
     const { data } = await api.post<Campaign>("/campaigns", campaign);
     return data;

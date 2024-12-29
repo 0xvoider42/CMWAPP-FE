@@ -5,5 +5,4 @@ export const countryCodes = [
   { code: "AU", name: "Australia" },
   { code: "DE", name: "Germany" },
   { code: "FR", name: "France" },
-  // Add more countries as needed
 ];
