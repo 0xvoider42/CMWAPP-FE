@@ -1,0 +1,17 @@
+services:
+  frontend:
+    container_name: campaign-management-fe
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000/api-v1
+    networks:
+      - campaign-network
+
+networks:
+  campaign-network:
+    driver: bridge

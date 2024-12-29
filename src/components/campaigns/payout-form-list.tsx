@@ -73,8 +73,14 @@ export function PayoutFormList({ control, name }: PayoutFormListProps) {
                   <Input
                     {...field}
                     type="number"
-                    step="0.01"
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    min="0"
+                    step="0.1"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '' || parseFloat(value) >= 0) {
+                        field.onChange(value === '' ? '' : parseFloat(value));
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

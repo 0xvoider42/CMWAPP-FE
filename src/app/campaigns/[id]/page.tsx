@@ -117,7 +117,7 @@ export default function CampaignDetailsPage() {
               {campaign.payouts.map((payout) => (
                 <TableRow key={payout.id}>
                   <TableCell>{payout.country}</TableCell>
-                  <TableCell>{payout.amount.toFixed(2)}</TableCell>
+                  <TableCell>{payout.amount}</TableCell>
                   <TableCell>{payout.currency}</TableCell>
                 </TableRow>
               ))}
