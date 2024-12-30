@@ -199,7 +199,6 @@ export default function CampaignsPage() {
                   <TableRow key={campaign.id}>
                     <TableCell className="font-medium">
                       {campaign.title}
-                      {console.log(campaign)}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       <a
