@@ -136,7 +136,7 @@ export default function Home() {
             </div>
             <div className="space-y-2">
               <h3 className="text-3xl font-bold">{stats.conversionRate}%</h3>
-              <p className="text-gray-500">Conversion rate</p>
+              <p className="text-gray-500">Campaign activity</p>
             </div>
             <div className="space-y-2">
               <h3 className="text-3xl font-bold">24/7</h3>
