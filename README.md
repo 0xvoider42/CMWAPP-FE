@@ -1,6 +1,6 @@
 # Campaign Management UI
 A modern web interface for the Campaign Management System built with Next.js 14, React, and TypeScript.
-The application is deployed: https://cmwapp-8gqmpqm26-nicks-projects-0a3a799c.vercel.app/
+The application is deployed: https://cmwapp-fe.vercel.app/
 
 ## 🚀 Features
 - Intuitive campaign creation and management interface
