@@ -1,4 +1,6 @@
 export interface Campaign {
+  conversionRate: number;
+  activeCampaigns: number;
   id: number;
   title: string;
   landingPageUrl: string;

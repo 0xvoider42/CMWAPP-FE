@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,11 +10,36 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ArrowRightIcon, BarChart3Icon, LineChart, Settings2Icon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { campaignApi } from '@/lib/api/campaigns'
+import { countryCodes } from '@/lib/utils/countries'
 
 export default function Home() {
+  const [stats, setStats] = useState({
+    activeCampaigns: 0,
+    countries: 0,
+    conversionRate: 0,
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await campaignApi.getStats();
+        setStats({
+          activeCampaigns: response.activeCampaigns,
+          countries: countryCodes.length,
+          conversionRate: response.conversionRate,
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    }
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="flex flex-col items-center">
-      {/* Hero Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
@@ -36,7 +63,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="w-full py-12 bg-white">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -45,7 +71,7 @@ export default function Home() {
                 <BarChart3Icon className="h-8 w-8 text-primary mb-2" />
                 <CardTitle>Campaign Analytics</CardTitle>
                 <CardDescription>
-                  Track performance metrics and optimize your campaigns in real-time
+                  Track performance metrics and optimize your campaigns
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -97,21 +123,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
       <section className="w-full py-12 bg-gray-50">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="space-y-2">
-              <h3 className="text-3xl font-bold">100+</h3>
+              <h3 className="text-3xl font-bold">{stats.activeCampaigns}+</h3>
               <p className="text-gray-500">Active Campaigns</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl font-bold">50+</h3>
+              <h3 className="text-3xl font-bold">{stats.countries}+</h3>
               <p className="text-gray-500">Countries</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl font-bold">1M+</h3>
-              <p className="text-gray-500">Conversions</p>
+              <h3 className="text-3xl font-bold">{stats.conversionRate}%</h3>
+              <p className="text-gray-500">Conversion rate</p>
             </div>
             <div className="space-y-2">
               <h3 className="text-3xl font-bold">24/7</h3>
