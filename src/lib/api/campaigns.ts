@@ -41,4 +41,10 @@ export const campaignApi = {
     const { data } = await api.patch<Campaign>(`/campaigns/${id}/toggle`);
     return data;
   },
+
+  getStats: async () => {
+    const { data } = await api.get<Campaign>("/campaigns/stats");
+
+    return data;
+  },
 };
