@@ -1,5 +1,6 @@
-'use client';
+'use client'
 
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useCampaign, useToggleCampaign } from '@/lib/hooks/use-campaigns';
@@ -21,30 +22,35 @@ import {
 } from '@/components/ui/table';
 
 export default function CampaignDetailsPage() {
-  const params = useParams();
+  const { id } = useParams();
   const router = useRouter();
-  const campaignId = parseInt(params.id as string);
-  
+  const campaignId = parseInt(id as string);
   const { data: campaign, isLoading } = useCampaign(campaignId);
   const toggleCampaign = useToggleCampaign();
+  const [isRunning, setIsRunning] = useState<boolean | undefined>(undefined);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!campaign) {
-    return <div>Campaign not found</div>;
-  }
+  useEffect(() => {
+    if (campaign) {
+      setIsRunning(campaign.isRunning);
+    }
+  }, [campaign]);
 
   const handleToggleStatus = async () => {
+    if (!campaignId) return; // Early return if campaignId is invalid
     try {
       await toggleCampaign.mutateAsync(campaignId);
+      setIsRunning((prev) => !prev);
       toast.success('Campaign status updated');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      toast.error('Failed to update campaign status');
+      // @ts-expect-error error is of unknown type
+      toast.error(`Failed to update campaign status: ${error.message}`);
     }
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (!campaign) return <div>Campaign not found</div>;
+
+  const { title, landingPageUrl, description, payouts } = campaign;
 
   return (
     <div className="space-y-6">
@@ -58,42 +64,47 @@ export default function CampaignDetailsPage() {
             Edit Campaign
           </Button>
           <Button
-            variant={campaign.isRunning ? "destructive" : "default"}
+            variant={isRunning ? "destructive" : "default"}
             onClick={handleToggleStatus}
+            className={isRunning ? "hover:bg-red-600" : "hover:bg-green-600"}
           >
-            {campaign.isRunning ? 'Stop Campaign' : 'Start Campaign'}
+            {isRunning ? 'Stop Campaign' : 'Start Campaign'}
           </Button>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{campaign.title}</CardTitle>
+          <CardTitle>{title}</CardTitle>
           <CardDescription>Campaign Information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-medium">Landing Page URL</h3>
             <p className="text-sm text-gray-500">
-              <a href={campaign.landingPageUrl} target="_blank" rel="noopener noreferrer">
-                {campaign.landingPageUrl}
+              <a href={landingPageUrl} target="_blank" rel="noopener noreferrer">
+                {landingPageUrl}
               </a>
             </p>
           </div>
           <div>
             <h3 className="font-medium">Description</h3>
-            <p className="text-sm text-gray-500">{campaign.description || 'No description'}</p>
+            <p className="text-sm text-gray-500">{description || 'No description'}</p>
           </div>
           <div>
             <h3 className="font-medium">Status</h3>
             <span
-              className={`inline-block px-2 py-1 rounded-full text-xs ${
-                campaign.isRunning
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-gray-100 text-gray-800'
+              className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                isRunning ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
               }`}
             >
-              {campaign.isRunning ? 'Running' : 'Stopped'}
+              <span className={`relative flex h-2 w-2`}>
+                {isRunning && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                )}
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${isRunning ? 'bg-green-500' : 'bg-gray-500'}`}></span>
+              </span>
+              {isRunning ? 'Running' : 'Stopped'}
             </span>
           </div>
         </CardContent>
@@ -114,7 +125,7 @@ export default function CampaignDetailsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {campaign.payouts.map((payout) => (
+              {payouts.map((payout) => (
                 <TableRow key={payout.id}>
                   <TableCell>{payout.country}</TableCell>
                   <TableCell>{payout.amount}</TableCell>
