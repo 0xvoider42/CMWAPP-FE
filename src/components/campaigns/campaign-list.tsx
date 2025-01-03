@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useCampaigns } from '@/lib/hooks/use-campaigns';
-import { Button } from '../ui/button';
+import { useState } from "react";
+import { debounce } from "lodash";
+import Link from "next/link";
+import { useCampaigns } from "@/lib/hooks/use-campaigns";
+import { Button } from "../ui/button";
 import {
   Table,
   TableBody,
@@ -11,15 +12,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table';
-import { Input } from '../ui/input';
+} from "../ui/table";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from "../ui/select";
 
 export function CampaignList() {
   const [filters, setFilters] = useState({
@@ -27,6 +28,16 @@ export function CampaignList() {
     landingPageUrl: '',
     isRunning: undefined as boolean | undefined,
   });
+
+  // Debounce the filter updates
+  const debouncedSetFilters = debounce((newFilters) => {
+    setFilters(newFilters);
+  }, 300);
+
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFilters = { ...filters, [field]: e.target.value };
+    debouncedSetFilters(newFilters);
+  };
 
   const { data: campaigns, isLoading, error } = useCampaigns(filters);
 
@@ -43,23 +54,22 @@ export function CampaignList() {
       <div className="flex items-center gap-4">
         <Input
           placeholder="Search by title..."
-          value={filters.title}
-          onChange={(e) => setFilters({ ...filters, title: e.target.value })}
+          defaultValue={filters.title}
+          onChange={handleInputChange('title')}
           className="max-w-xs"
         />
         <Input
           placeholder="Search by URL..."
-          value={filters.landingPageUrl}
-          onChange={(e) =>
-            setFilters({ ...filters, landingPageUrl: e.target.value })
-          }
+          defaultValue={filters.landingPageUrl}
+          onChange={handleInputChange('landingPageUrl')}
           className="max-w-xs"
         />
         <Select
+          value={filters.isRunning === undefined ? "all" : filters.isRunning.toString()}
           onValueChange={(value) =>
             setFilters({
               ...filters,
-              isRunning: value === '' ? undefined : value === 'true',
+              isRunning: value === "all" ? undefined : value === "true",
             })
           }
         >
@@ -67,7 +77,7 @@ export function CampaignList() {
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All</SelectItem>
+            <SelectItem value="all">All</SelectItem>
             <SelectItem value="true">Running</SelectItem>
             <SelectItem value="false">Stopped</SelectItem>
           </SelectContent>
@@ -77,49 +87,41 @@ export function CampaignList() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Landing Page URL</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Payouts</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="w-[250px]">Title</TableHead>
+            <TableHead className="w-[300px]">Landing Page URL</TableHead>
+            <TableHead className="w-[120px] text-center">Status</TableHead>
+            <TableHead className="w-[100px] text-center">Payouts</TableHead>
+            <TableHead className="w-[180px] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {campaigns?.map((campaign) => (
             <TableRow key={campaign.id}>
-              <TableCell>{campaign.title}</TableCell>
-              <TableCell>{campaign.landingPageUrl}</TableCell>
-              <TableCell>
+              <TableCell className="font-medium">{campaign.title}</TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {campaign.landingPageUrl}
+              </TableCell>
+              <TableCell className="text-center">
                 <span
-                  className={`px-2 py-1 rounded-full text-xs ${
+                  className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
                     campaign.isRunning
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {campaign.isRunning ? 'Running' : 'Stopped'}
+                  {campaign.isRunning ? "Running" : "Stopped"}
                 </span>
               </TableCell>
-              <TableCell>{campaign.payouts.length}</TableCell>
-              <TableCell>
-                <div className="space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                  >
-                    <Link href={`/campaigns/${campaign.id}`}>
-                      View
-                    </Link>
+              <TableCell className="text-center font-medium">
+                {campaign.payouts.length}
+              </TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/campaigns/${campaign.id}`}>View</Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                  >
-                    <Link href={`/campaigns/${campaign.id}/edit`}>
-                      Edit
-                    </Link>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/campaigns/${campaign.id}/edit`}>Edit</Link>
                   </Button>
                 </div>
               </TableCell>
