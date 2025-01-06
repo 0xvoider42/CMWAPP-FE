@@ -1,9 +1,15 @@
 import { jwtDecode } from "jwt-decode";
 
+export enum UserRole {
+  ADMIN = "admin",
+  MANAGER = "manager",
+  USER = "user",
+}
+
 export interface User {
   id: number;
   email: string;
-  role: string;
+  role: UserRole;
 }
 
 export interface AuthToken {
@@ -12,6 +18,13 @@ export interface AuthToken {
   role: string;
   exp: number;
 }
+
+export const hasPermission = (
+  userRole: UserRole,
+  requiredRoles: UserRole[]
+): boolean => {
+  return requiredRoles.includes(userRole);
+};
 
 export const getAuthToken = () => {
   if (typeof window === "undefined") return null;
@@ -32,7 +45,7 @@ export const decodeToken = (token: string): User | null => {
     return {
       id: decoded.sub,
       email: decoded.email,
-      role: decoded.role,
+      role: decoded.role as UserRole,
     };
   } catch {
     return null;
