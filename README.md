@@ -4,6 +4,7 @@ The application is deployed: https://cmwapp-fe.vercel.app/
 
 ## 🚀 Features
 - Intuitive campaign creation and management interface
+- Role-based system, to access all features register as `admin`
 - Real-time campaign status toggling
 - Country-specific payout management
 - Advanced filtering and search capabilities
@@ -56,3 +57,4 @@ The UI connects to the Campaign Management API with these endpoints:
 - GET ```/api-v1/campaigns/:id``` - Get campaign details
 - PATCH ```/api-v1/campaigns/:id``` - Update campaign
 - ```PATCH /api-v1/campaigns/:id/toggle``` - Toggle campaign status
+- DELETE `DELETE /api-v1/campaigns/:id` - Delete campaign
