@@ -53,3 +53,14 @@ export function useToggleCampaign() {
     },
   });
 }
+
+export function useDeleteCampaign() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => campaignApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+    },
+  });
+}

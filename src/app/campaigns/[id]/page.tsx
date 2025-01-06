@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useCampaign, useToggleCampaign } from "@/lib/hooks/use-campaigns";
+import {
+  useCampaign,
+  useDeleteCampaign,
+  useToggleCampaign,
+} from "@/lib/hooks/use-campaigns";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,6 +32,7 @@ export default function CampaignDetailsPage() {
   const campaignId = parseInt(id as string);
   const { data: campaign, isLoading } = useCampaign(campaignId);
   const toggleCampaign = useToggleCampaign();
+  const deleteCampaign = useDeleteCampaign();
   const [isRunning, setIsRunning] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
@@ -45,6 +50,18 @@ export default function CampaignDetailsPage() {
     } catch (error) {
       // @ts-expect-error error is of unknown type
       toast.error(`Failed to update campaign status: ${error.message}`);
+    }
+  };
+
+  const handleDeleteCampaign = async () => {
+    if (!campaignId) return;
+    try {
+      await deleteCampaign.mutateAsync(campaignId);
+      toast.success("Campaign deleted successfully");
+      router.push("/campaigns");
+    } catch (error) {
+      // @ts-expect-error error is of unknown type
+      toast.error(`Failed to delete campaign: ${error.message}`);
     }
   };
 
@@ -71,6 +88,13 @@ export default function CampaignDetailsPage() {
               className={isRunning ? "hover:bg-red-600" : "hover:bg-green-600"}
             >
               {isRunning ? "Stop Campaign" : "Start Campaign"}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCampaign}
+              className="bg-red-600 text-white hover:bg-red-700 transition duration-200"
+            >
+              Delete Campaign
             </Button>
           </div>
         </div>

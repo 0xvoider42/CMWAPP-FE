@@ -1,18 +1,25 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { ArrowRightIcon, BarChart3Icon, LineChart, Settings2Icon } from 'lucide-react'
-import { useState, useEffect } from 'react'
-import { campaignApi } from '@/lib/api/campaigns'
-import { countryCodes } from '@/lib/utils/countries'
+} from "@/components/ui/card";
+import {
+  ArrowRightIcon,
+  BarChart3Icon,
+  LineChart,
+  Settings2Icon,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { campaignApi } from "@/lib/api/campaigns";
+import { countryCodes } from "@/lib/utils/countries";
+import { RoleGate } from "@/components/common/role-gate";
+import { UserRole } from "@/lib/auth";
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -31,7 +38,7 @@ export default function Home() {
           conversionRate: response.conversionRate,
         });
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error("Error fetching stats:", error);
       }
     }
 
@@ -48,7 +55,8 @@ export default function Home() {
                 Campaign Management System
               </h1>
               <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl">
-                Create, manage, and optimize your advertising campaigns all in one place. Track performance and scale your success.
+                Create, manage, and optimize your advertising campaigns all in
+                one place. Track performance and scale your success.
               </p>
             </div>
             <div className="space-x-4">
@@ -64,42 +72,51 @@ export default function Home() {
 
         <section className="w-full py-12 bg-white">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <BarChart3Icon className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Campaign Analytics</CardTitle>
-                <CardDescription>
-                  Track performance metrics and optimize your campaigns
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="w-full group" asChild>
-                  <Link href="/campaigns" className="flex items-center justify-between">
-                    View Analytics
-                    <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <BarChart3Icon className="h-8 w-8 text-primary mb-2" />
+                  <CardTitle>Campaign Analytics</CardTitle>
+                  <CardDescription>
+                    Track performance metrics and optimize your campaigns
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="ghost" className="w-full group" asChild>
+                    <Link
+                      href="/campaigns"
+                      className="flex items-center justify-between"
+                    >
+                      View Analytics
+                      <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <Settings2Icon className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Campaign Management</CardTitle>
-                <CardDescription>
-                  Create and manage campaigns with our intuitive interface
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="w-full group" asChild>
-                  <Link href="/campaigns/create" className="flex items-center justify-between">
-                    Create Campaign
-                    <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <RoleGate allowedRoles={[UserRole.ADMIN, UserRole.MANAGER]}>
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <Settings2Icon className="h-8 w-8 text-primary mb-2" />
+                  <CardTitle>Campaign Management</CardTitle>
+                  <CardDescription>
+                    Create and manage campaigns with our intuitive interface
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="ghost" className="w-full group" asChild>
+                    <Link
+                      href="/campaigns/create"
+                      className="flex items-center justify-between"
+                    >
+                      Create Campaign
+                      <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </RoleGate>
 
+            <RoleGate allowedRoles={[UserRole.ADMIN, UserRole.MANAGER]}>
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <LineChart className="h-8 w-8 text-primary mb-2" />
@@ -110,13 +127,17 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <Button variant="ghost" className="w-full group" asChild>
-                  <Link href="/campaigns" className="flex items-center justify-between">
+                  <Link
+                    href="/campaigns"
+                    className="flex items-center justify-between"
+                  >
                     Manage Payouts
                     <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
               </CardContent>
             </Card>
+            </RoleGate>
           </div>
         </section>
 
@@ -142,5 +163,5 @@ export default function Home() {
         </section>
       </div>
     </main>
-  )
+  );
 }
