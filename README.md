@@ -15,7 +15,6 @@ The application is deployed: https://cmwapp-fe.vercel.app/
 
 ## 📋 Prerequisites
 - Node.js
-- Docker and Docker Compose
 - npm package manager
 
 ## 🛠️ Installation
